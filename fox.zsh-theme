@@ -1,10 +1,32 @@
-# fox.zsh-theme
+# adhde prompt theme
 
-PROMPT='%{$fg[cyan]%}┌[%{$fg_bold[white]%}%n%{$reset_color%}%{$fg[cyan]%}@%{$fg_bold[white]%}%M%{$reset_color%}%{$fg[cyan]%}]%{$fg[white]%}-%{$fg[cyan]%}(%{$fg_bold[white]%}%~%{$reset_color%}%{$fg[cyan]%})$(git_prompt_info)
-└> % %{$reset_color%}'
+prompt_adhde_setup() {
 
-ZSH_THEME_GIT_PROMPT_PREFIX="-[%{$reset_color%}%{$fg[white]%}git://%{$fg_bold[white]%}"
-ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}%{$fg[cyan]%}]-"
-ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}✗%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg[green]%}✔%{$reset_color%}"
+    # main color
+    local mcc=${1:-'cyan'}
+    mc="%F{$mcc}"
 
+    prompt_opts=(cr subst percent)
+    # setopt localoptions nowarncreateglobal
+
+    autoload -Uz vcs_info
+    zstyle ':vcs_info:git:*' check-for-changes true
+    zstyle ':vcs_info:*' unstagedstr '%B%F{red}U%f%b'
+    zstyle ':vcs_info:*' stagedstr '%B%F{green}S%f%b'
+    zstyle ':vcs_info:*' formats "-${mc}[%f%s://%%B%b%%b %u %c${mc}]%f"
+
+    add-zsh-hook precmd prompt_adhde_precmd
+}
+
+prompt_adhde_precmd() {
+    exit_code="$?"
+    if [ "$exit_code" = "0" ]; then
+        p_exit_code="%F{green}${exit_code}%f"
+    else
+        p_exit_code="%F{red}${exit_code}%f"
+    fi
+    vcs_info
+    PS1="${mc}┌[%f%B${USER}%b${mc}@%f%B${HOST}%b${mc}]%f-${mc}(%f%B$(pwd)%b${mc})%f-${mc}{%B${p_exit_code}%b${mc}}%f${vcs_info_msg_0_}${prompt_newline}${mc}└>%f "
+}
+
+prompt_adhde_setup "$@"
