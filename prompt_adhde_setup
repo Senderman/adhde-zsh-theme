@@ -1,5 +1,15 @@
 # adhde prompt theme
 
+prompt_adhde_help() {
+    cat <<'EOF'
+
+prompt adhde [<maincolor>]
+
+By default, main color is cyan
+
+EOF
+}
+
 prompt_adhde_setup() {
 
     # main color
@@ -30,3 +40,4 @@ prompt_adhde_precmd() {
 }
 
 prompt_adhde_setup "$@"
+

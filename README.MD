@@ -1,16 +1,36 @@
-# Fox theme fixed
+# ADHDE zsh theme
 
-This is fork of [OMZ's fox theme](https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/fox.zsh-theme) with the `☮` char replaced by `@`, because in many fonts, there's no monospace "hippie logo" character, so the shell prompt looks weird.
+Zsh theme for [Attendtion Deficit Hyperactivity Desktop Environment](https://github.com/Senderman/adhde)
+
+![Preview](./preview.png)
 
 # Installation
 
-Use [Antidote](https://getantidote.github.io/)
+## Plan zsh
 
-Add the following lines to your plugins file:
+Clone this repository to any location on your PC, then add to your `.zshrc`:
+
+```bash
+fpath+=(/path/to/this/directory)
+autoload -Uz promptinit
+promptinit
+prompt adhde
+```
+
+If you want to change the accent color, which is cyan by default:
+
+```bash
+prompt adhde red
+```
+
+## With [Antidote](https://getantidote.github.io/)
+
+Same as for plain zsh, but instead of modifying fpath directly, add the following line to your plugins file:
 
 ```
-getantidote/use-omz
-ohmyzsh/ohmyzsh path:lib
-Senderman/fox-theme-fixed
+Senderman/adhde-zsh-theme kind:fpath
 ```
+
+# Misc
+Inspired by [OMZ's fox theme](https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/fox.zsh-theme)
 
