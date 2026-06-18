@@ -6,7 +6,7 @@ Zsh theme for [Attendtion Deficit Hyperactivity Desktop Environment](https://git
 
 # Installation
 
-## Plan zsh
+## Plain zsh
 
 Clone this repository to any location on your PC, then add to your `.zshrc`:
 
