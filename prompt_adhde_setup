@@ -36,7 +36,7 @@ prompt_adhde_precmd() {
         p_exit_code="%F{red}${exit_code}%f"
     fi
     vcs_info
-    PS1="${mc}┌[%f%B${USER}%b${mc}@%f%B${HOST}%b${mc}]%f-${mc}(%f%B$(pwd)%b${mc})%f-${mc}{%B${p_exit_code}%b${mc}}%f${vcs_info_msg_0_}${prompt_newline}${mc}└>%f "
+    PS1="${mc}┌[%f%B${USER}%b${mc}@%f%B${HOST}%b${mc}]%f-${mc}(%f%B%~%b${mc})%f-${mc}{%B${p_exit_code}%b${mc}}%f${vcs_info_msg_0_}${prompt_newline}${mc}└>%f "
 }
 
 prompt_adhde_setup "$@"
