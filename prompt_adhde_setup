@@ -21,9 +21,9 @@ prompt_adhde_setup() {
 
     autoload -Uz vcs_info
     zstyle ':vcs_info:git:*' check-for-changes true
-    zstyle ':vcs_info:*' unstagedstr '%B%F{red}U%f%b'
-    zstyle ':vcs_info:*' stagedstr '%B%F{green}S%f%b'
-    zstyle ':vcs_info:*' formats "-${mc}[%f%s://%%B%b%%b %u %c${mc}]%f"
+    zstyle ':vcs_info:*' unstagedstr ' %B%F{red}U%f%b'
+    zstyle ':vcs_info:*' stagedstr ' %B%F{green}S%f%b'
+    zstyle ':vcs_info:*' formats "-${mc}[%f%s://%%B%b%%b%u%c${mc}]%f"
 
     add-zsh-hook precmd prompt_adhde_precmd
 }
@@ -36,7 +36,26 @@ prompt_adhde_precmd() {
         p_exit_code="%F{red}${exit_code}%f"
     fi
     vcs_info
-    PS1="${mc}┌[%f%B${USER}%b${mc}@%f%B${HOST}%b${mc}]%f-${mc}(%f%B%~%b${mc})%f-${mc}{%B${p_exit_code}%b${mc}}%f${vcs_info_msg_0_}${prompt_newline}${mc}└>%f "
+    PS1="${mc}┌[%f%B${USER}%b${mc}@%f%B${HOST}%b${mc}]%f-${mc}(%f%B$(short_pwd)%b${mc})%f-${mc}{%B${p_exit_code}%b${mc}}%f${vcs_info_msg_0_}${prompt_newline}${mc}└>%f "
+}
+
+short_pwd() {
+  local p="${(%):-%~}"
+  local -a parts
+  parts=("${(@s:/:)p}")
+
+  local i last=$#parts
+  for (( i = 1; i < last; i++ )); do
+    [[ -z "$parts[i]" || "$parts[i]" == "~" ]] && continue
+
+    if [[ "$parts[i]" == .* && ${#parts[i]} -gt 1 ]]; then
+      parts[i]="${parts[i][1,2]}"
+    else
+      parts[i]="${parts[i][1]}"
+    fi
+  done
+
+  print -r -- "${(j:/:)parts}"
 }
 
 prompt_adhde_setup "$@"
