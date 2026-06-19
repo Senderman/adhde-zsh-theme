@@ -17,11 +17,18 @@ promptinit
 prompt adhde
 ```
 
-If you want to change the accent color, which is cyan by default:
+To see all options of the theme (for example, to change the accent color or to hide user/host/vcs info/clock/etc), run:
 
 ```bash
-prompt adhde red
+prompt -h adhde
 ```
+
+Then add to your `.zshrc`
+
+```bash
+prompt adhde blue novcs noclock
+```
+
 
 ## With [Antidote](https://getantidote.github.io/)
 

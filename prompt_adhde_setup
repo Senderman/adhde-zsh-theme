@@ -2,44 +2,111 @@
 
 prompt_adhde_help() {
     cat <<'EOF'
-
-prompt adhde [<maincolor>]
+prompt adhde [<maincolor>] [nouser] [nohost] [fullcwd] [noexitcode] [novcs] [noclock]
 
 By default, main color is cyan
+
+- nouser: hide username
+- nohost: hide hostname
+- fullcwd: do not replace $HOME with ~ and do not reduce parent dirnames to one character
+- noexitcode: do not show exitcode
+- novcs: do not show vcs status
+- noclock: do not show date/time
 
 EOF
 }
 
 prompt_adhde_setup() {
 
-    # main color
-    local mcc=${1:-'cyan'}
-    mc="%F{$mcc}"
+    opt_user=true
+    opt_host=true
+    opt_fullcwd=false
+    opt_exitcode=true
+    opt_vcs=true
+    opt_clock=true
+    opt_maincolor='cyan'
+
+    if [ -n "$*" ]; then
+        opt_maincolor="$1"
+        shift 1
+    fi
+
+    for option in "$@"; do
+        case "$option" in
+            nouser)
+                opt_user=false;;
+            nohost)
+                opt_host=false;;
+            fullcwd)
+                opt_fullcwd=true;;
+            noexitcode)
+                opt_exitcode=false;;
+            novcs)
+                opt_vcs=false;;
+            noclock)
+                opt_clock=false;;
+        esac
+    done
+
+    mc="%F{$opt_maincolor}"
 
     prompt_opts=(cr subst percent)
     # setopt localoptions nowarncreateglobal
-
-    autoload -Uz vcs_info
-    zstyle ':vcs_info:git:*' check-for-changes true
-    zstyle ':vcs_info:*' unstagedstr ' %B%F{red}U%f%b'
-    zstyle ':vcs_info:*' stagedstr ' %B%F{green}S%f%b'
-    zstyle ':vcs_info:*' formats "-${mc}[%f%s://%%B%b%%b%u%c${mc}]%f"
+    
+    if $opt_vcs; then
+        autoload -Uz vcs_info
+        zstyle ':vcs_info:git:*' check-for-changes true
+        zstyle ':vcs_info:*' unstagedstr ' %B%F{red}U%f%b'
+        zstyle ':vcs_info:*' stagedstr ' %B%F{green}S%f%b'
+        zstyle ':vcs_info:*' formats " ${mc}[%f%s:%%B%b%%b%u%c${mc}]%f"
+    fi
 
     add-zsh-hook precmd prompt_adhde_precmd
 }
 
 prompt_adhde_precmd() {
-    exit_code="$?"
-    if [ "$exit_code" = "0" ]; then
-        p_exit_code="%F{green}${exit_code}%f"
-    else
-        p_exit_code="%F{red}${exit_code}%f"
+
+    local exit_code="$?"
+    local p_exit_code
+    if $opt_exitcode; then
+        if [ "$exit_code" = "0" ]; then
+            p_exit_code=" ${mc}(%B%F{green}%?%f%b${mc})%f"
+        else
+            p_exit_code=" ${mc}(%B%F{red}%?%f%b${mc})%f"
+        fi
     fi
-    vcs_info
-    PS1="${mc}┌[%f%B${USER}%b${mc}@%f%B${HOST}%b${mc}]%f-${mc}(%f%B$(short_pwd)%b${mc})%f-${mc}{%B${p_exit_code}%b${mc}}%f${vcs_info_msg_0_}${prompt_newline}${mc}└>%f "
+
+    local userhost
+    if $opt_user && $opt_host; then
+        userhost="[%f%B%n%b${mc}@%f%B%M%b${mc}]%f "
+    elif $opt_user; then
+        userhost="[%f%B%n%b${mc}]%f "
+    elif $opt_host; then
+        userhost="[%f%B%M%b${mc}]%f "
+    fi
+
+    local cwd="${mc}(%f%B$(short_cwd)%b${mc})%f"
+    if $opt_fullcwd; then
+        cwd="${mc}(%f%B%/%b${mc})%f"
+    fi
+
+    local clock
+    if $opt_clock; then
+        local dot="${mc}.%f"
+        local col="${mc}:%f"
+        clock="     %B%D{%d}${dot}%D{%m}${dot}%D{%Y} %D{%H}${col}%D{%M}${col}%D{%S}%b"
+    fi
+
+    local vcsstatus
+    if $opt_vcs; then
+        vcs_info
+        vcsstatus="${vcs_info_msg_0_}"
+    fi
+
+    PS1="${mc}┌${userhost}${cwd}${p_exit_code}${vcsstatus}${clock}${prompt_newline}${mc}└>%f "
 }
 
-short_pwd() {
+short_cwd() {
   local p="${(%):-%~}"
   local -a parts
   parts=("${(@s:/:)p}")
