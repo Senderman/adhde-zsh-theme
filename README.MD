@@ -1,6 +1,6 @@
 # ADHDE zsh theme
 
-Zsh theme for [Attendtion Deficit Hyperactivity Desktop Environment](https://github.com/Senderman/adhde)
+Zsh theme for [Attention Deficit Hyperactivity Desktop Environment](https://github.com/Senderman/adhde)
 
 ![Preview](./preview.png)
 
@@ -11,7 +11,7 @@ Zsh theme for [Attendtion Deficit Hyperactivity Desktop Environment](https://git
 Clone this repository to any location on your PC, then add to your `.zshrc`:
 
 ```bash
-fpath+=(/path/to/this/directory)
+fpath+=(/path/to/cloned/repository)
 autoload -Uz promptinit
 promptinit
 prompt adhde
