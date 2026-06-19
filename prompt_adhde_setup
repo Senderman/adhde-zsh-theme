@@ -107,22 +107,36 @@ prompt_adhde_precmd() {
 }
 
 short_cwd() {
-  local p="${(%):-%~}"
-  local -a parts
-  parts=("${(@s:/:)p}")
+    local p="${(%):-%~}"
+    local -a parts
+    parts=("${(@s:/:)p}")
 
-  local i last=$#parts
-  for (( i = 1; i < last; i++ )); do
-    [[ -z "$parts[i]" || "$parts[i]" == "~" ]] && continue
+    local i last=$#parts
+    for (( i = 1; i < last; i++ )); do
+        [[ -z "$parts[i]" || "$parts[i]" == "~" ]] && continue
 
-    if [[ "$parts[i]" == .* && ${#parts[i]} -gt 1 ]]; then
-      parts[i]="${parts[i][1,2]}"
-    else
-      parts[i]="${parts[i][1]}"
-    fi
-  done
+        if [[ "$parts[i]" == .* && ${#parts[i]} -gt 1 ]]; then
+            parts[i]="${parts[i][1,2]}"
+        else
+            parts[i]="${parts[i][1]}"
+        fi
+    done
 
-  print -r -- "${(j:/:)parts}"
+    print -r -- "${(j:/:)parts}"
+}
+
+prompt_adhde_preview() {
+    prompt_preview_theme adhde
+    print
+    prompt_preview_theme adhde blue nouser
+    print
+    prompt_preview_theme adhde magenta nohost
+    print
+    prompt_preview_theme adhde red nouser nohost
+    print
+    prompt_preview_theme adhde '#F8B028' noexitcode noclock
+    print
+    prompt_preview_theme adhde '#E060C0' fullcwd novcs
 }
 
 prompt_adhde_setup "$@"
