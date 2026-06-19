@@ -104,6 +104,7 @@ prompt_adhde_precmd() {
     fi
 
     PS1="${mc}┌${userhost}${cwd}${p_exit_code}${vcsstatus}${clock}${prompt_newline}${mc}└>%f "
+    PS2="${mc}%_> %f"
 }
 
 short_cwd() {
