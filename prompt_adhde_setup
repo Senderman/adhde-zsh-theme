@@ -76,8 +76,6 @@ prompt_adhde_precmd() {
         if [ "$exit_code" = "0" ]; then
             if $opt_succexitcode; then
                 p_exit_code=" ${mc}(%B%F{green}%?%f%b${mc})%f"
-            else
-                p_exit_code=""
             fi
         else
             p_exit_code=" ${mc}(%B%F{red}%?%f%b${mc})%f"
