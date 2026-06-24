@@ -10,6 +10,7 @@ By default, main color is cyan
 - nohost: hide hostname
 - fullcwd: do not replace $HOME with ~ and do not reduce parent dirnames to one character
 - noexitcode: do not show exitcode
+- succexitcode: show exit code on success
 - novcs: do not show vcs status
 - noclock: do not show date/time
 
@@ -22,6 +23,7 @@ prompt_adhde_setup() {
     opt_host=true
     opt_fullcwd=false
     opt_exitcode=true
+    opt_succexitcode=false
     opt_vcs=true
     opt_clock=true
     opt_maincolor='cyan'
@@ -41,6 +43,8 @@ prompt_adhde_setup() {
                 opt_fullcwd=true;;
             noexitcode)
                 opt_exitcode=false;;
+            succexitcode)
+                opt_succexitcode=true;;
             novcs)
                 opt_vcs=false;;
             noclock)
@@ -70,7 +74,11 @@ prompt_adhde_precmd() {
     local p_exit_code
     if $opt_exitcode; then
         if [ "$exit_code" = "0" ]; then
-            p_exit_code=" ${mc}(%B%F{green}%?%f%b${mc})%f"
+            if $opt_succexitcode; then
+                p_exit_code=" ${mc}(%B%F{green}%?%f%b${mc})%f"
+            else
+                p_exit_code=""
+            fi
         else
             p_exit_code=" ${mc}(%B%F{red}%?%f%b${mc})%f"
         fi
