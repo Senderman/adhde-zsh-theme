@@ -12,6 +12,7 @@ By default, main color is cyan
 - noexitcode: do not show exitcode
 - succexitcode: show exit code on success
 - novcs: do not show vcs status
+- noexecdur: do not show last cmd execution duration
 - noclock: do not show date/time
 
 EOF
@@ -25,6 +26,7 @@ prompt_adhde_setup() {
     opt_exitcode=true
     opt_succexitcode=false
     opt_vcs=true
+    opt_execdur=true
     opt_clock=true
     opt_maincolor='cyan'
 
@@ -47,6 +49,8 @@ prompt_adhde_setup() {
                 opt_succexitcode=true;;
             novcs)
                 opt_vcs=false;;
+            noexecdur)
+                opt_execdur=false;;
             noclock)
                 opt_clock=false;;
         esac
@@ -64,7 +68,12 @@ prompt_adhde_setup() {
         zstyle ':vcs_info:*' stagedstr ' %B%F{green}S%f%b'
         zstyle ':vcs_info:*' formats " ${mc}[%f%s:%%B%b%%b%u%c${mc}]%f"
     fi
-
+    
+    if $opt_execdur; then
+        zmodload zsh/datetime # faster than `date`
+        add-zsh-hook preexec _mark_start_ts
+        _mark_start_ts # init value
+    fi
     add-zsh-hook precmd prompt_adhde_precmd
 }
 
@@ -72,14 +81,37 @@ prompt_adhde_precmd() {
 
     local exit_code="$?"
     local p_exit_code
+    local show_exit_code=false
     if $opt_exitcode; then
         if [ "$exit_code" = "0" ]; then
             if $opt_succexitcode; then
-                p_exit_code=" ${mc}(%B%F{green}%?%f%b${mc})%f"
+                show_exit_code=true
+                p_exit_code="%B%F{green}%?%f%b"
             fi
         else
-            p_exit_code=" ${mc}(%B%F{red}%?%f%b${mc})%f"
+            show_exit_code=true
+            p_exit_code="%B%F{red}%?%f%b"
         fi
+    fi
+
+    local execduration
+    if $opt_execdur; then
+        local elapsed=$((EPOCHSECONDS - theme_cmd_timestamp))
+        local days="$((elapsed / 86400))d "
+        local hours="$((elapsed % 86400 / 3600))h "
+        local minutes="$((elapsed % 3600 / 60))m "
+        local seconds="$((elapsed % 60))s"
+        [ "$days" = "0d " ] && days=""
+        [ "$hours" = "0h " ] && hours=""
+        [ "$minutes" = "0m " ] && minutes=""
+        execduration="${days}${hours}${minutes}${seconds}"
+    fi
+
+    local cmdresult
+    local cmd_result_separator=""
+    if $show_exit_code || $opt_execdur; then
+        $show_exit_code && $opt_execdur && cmd_result_separator=" "
+        cmdresult=" ${mc}(%f${p_exit_code}${cmd_result_separator}${execduration}${mc})%f "
     fi
 
     local userhost
@@ -91,7 +123,7 @@ prompt_adhde_precmd() {
         userhost="[%f%B%M%b${mc}]%f "
     fi
 
-    local cwd="${mc}(%f%B$(short_cwd)%b${mc})%f"
+    local cwd="${mc}(%f%B$(_short_cwd)%b${mc})%f"
     if $opt_fullcwd; then
         cwd="${mc}(%f%B%/%b${mc})%f"
     fi
@@ -109,11 +141,15 @@ prompt_adhde_precmd() {
         vcsstatus="${vcs_info_msg_0_}"
     fi
 
-    PS1="${mc}┌${userhost}${cwd}${p_exit_code}${vcsstatus}${clock}${prompt_newline}${mc}└>%f "
+    PS1="${mc}┌${userhost}${cwd}${cmdresult}${vcsstatus}${clock}${prompt_newline}${mc}└>%f "
     PS2="${mc}%_> %f"
 }
 
-short_cwd() {
+_mark_start_ts() {
+  theme_cmd_timestamp=$EPOCHSECONDS
+}
+
+_short_cwd() {
     local p="${(%):-%~}"
     local -a parts
     parts=("${(@s:/:)p}")
