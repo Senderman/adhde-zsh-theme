@@ -169,17 +169,25 @@ _short_cwd() {
 }
 
 prompt_adhde_preview() {
+    print
     prompt_preview_theme adhde
+    print
     print
     prompt_preview_theme adhde blue nouser
     print
+    print
     prompt_preview_theme adhde magenta nohost
+    print
     print
     prompt_preview_theme adhde red nouser nohost
     print
-    prompt_preview_theme adhde '#F8B028' noexitcode noclock
+    print
+    prompt_preview_theme adhde '#F8B028' succexitcode noclock
+    print
     print
     prompt_preview_theme adhde '#E060C0' fullcwd novcs
+    print
+    print
 }
 
 prompt_adhde_setup "$@"
