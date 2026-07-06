@@ -111,7 +111,7 @@ prompt_adhde_precmd() {
     local cmd_result_separator=""
     if $show_exit_code || $opt_execdur; then
         $show_exit_code && $opt_execdur && cmd_result_separator=" "
-        cmdresult=" ${mc}(%f${p_exit_code}${cmd_result_separator}${execduration}${mc})%f "
+        cmdresult=" ${mc}(%f${p_exit_code}${cmd_result_separator}${execduration}${mc})%f"
     fi
 
     local userhost
