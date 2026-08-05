@@ -96,15 +96,20 @@ prompt_adhde_precmd() {
 
     local execduration
     if $opt_execdur; then
-        local elapsed=$((EPOCHSECONDS - theme_cmd_timestamp))
-        local days="$((elapsed / 86400))d "
-        local hours="$((elapsed % 86400 / 3600))h "
-        local minutes="$((elapsed % 3600 / 60))m "
-        local seconds="$((elapsed % 60))s"
-        [ "$days" = "0d " ] && days=""
-        [ "$hours" = "0h " ] && hours=""
-        [ "$minutes" = "0m " ] && minutes=""
-        execduration="${days}${hours}${minutes}${seconds}"
+        if ! $theme_cmd_exec; then
+            execduration="0s"
+        else
+            theme_cmd_exec=false
+            local elapsed=$((EPOCHSECONDS - theme_cmd_timestamp))
+            local days="$((elapsed / 86400))d "
+            local hours="$((elapsed % 86400 / 3600))h "
+            local minutes="$((elapsed % 3600 / 60))m "
+            local seconds="$((elapsed % 60))s"
+            [ "$days" = "0d " ] && days=""
+            [ "$hours" = "0h " ] && hours=""
+            [ "$minutes" = "0m " ] && minutes=""
+            execduration="${days}${hours}${minutes}${seconds}"
+        fi
     fi
 
     local cmdresult
@@ -147,6 +152,7 @@ prompt_adhde_precmd() {
 
 _mark_start_ts() {
   theme_cmd_timestamp=$EPOCHSECONDS
+  theme_cmd_exec=true
 }
 
 _short_cwd() {
