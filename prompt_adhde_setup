@@ -137,7 +137,7 @@ prompt_adhde_precmd() {
     if $opt_clock; then
         local dot="${mc}.%f"
         local col="${mc}:%f"
-        clock="     %B%D{%d}${dot}%D{%m}${dot}%D{%Y} %D{%H}${col}%D{%M}${col}%D{%S}%b"
+        clock=" ${mc}(%f%B%D{%d}${dot}%D{%m}${dot}%D{%Y} %D{%H}${col}%D{%M}${col}%D{%S}%b${mc})%f"
     fi
 
     local vcsstatus
