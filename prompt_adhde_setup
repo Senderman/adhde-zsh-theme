@@ -59,6 +59,7 @@ prompt_adhde_setup() {
     mc="%F{$opt_maincolor}"
 
     prompt_opts=(cr sp subst percent)
+    PROMPT_EOL_MARK='' # disable printing the '%' sign if the command's output is not ended with a newline
     # setopt localoptions nowarncreateglobal
     
     if $opt_vcs; then
