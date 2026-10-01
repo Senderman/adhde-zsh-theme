@@ -58,7 +58,7 @@ prompt_adhde_setup() {
 
     mc="%F{$opt_maincolor}"
 
-    prompt_opts=(cr subst percent)
+    prompt_opts=(cr sp subst percent)
     # setopt localoptions nowarncreateglobal
     
     if $opt_vcs; then
